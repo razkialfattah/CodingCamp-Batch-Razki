@@ -1,12 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Expense & Budget Visualizer</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Hello, World!</h1>
-    <p>This is a simple paragraph.</p>
+  <main class="app">
+    <header class="top">
+      <div>
+        <p class="muted">Total Balance</p>
+        <h1 id="total">Rp0</h1>
+      </div>
+      <button id="theme-toggle" class="ghost" type="button">Dark mode</button>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Add transaction</h2>
+        <form id="expense-form" novalidate>
+          <label for="item-name">Item name</label>
+          <input id="item-name" type="text" placeholder="e.g. Lunch" autocomplete="off">
+
+          <label for="amount">Amount</label>
+          <input id="amount" type="number" min="0" step="any" placeholder="e.g. 25000" inputmode="decimal">
+
+          <label for="category">Category</label>
+          <select id="category"></select>
+
+          <p id="form-error" class="error" role="alert"></p>
+          <button type="submit" class="primary">Add transaction</button>
+        </form>
+
+        <form id="category-form" class="inline" novalidate>
+          <input id="new-category" type="text" placeholder="New category" aria-label="New category name" autocomplete="off">
+          <button type="submit" class="ghost">Add</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Spending by category</h2>
+        <p id="chart-empty" class="muted">Add a transaction to see your chart.</p>
+        <div class="chart-wrap"><canvas id="chart" hidden></canvas></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="list-head">
+        <h2>Transactions</h2>
+        <select id="sort" aria-label="Sort transactions">
+          <option value="newest">Newest first</option>
+          <option value="high">Highest amount</option>
+          <option value="low">Lowest amount</option>
+          <option value="category">Category</option>
+        </select>
+      </div>
+      <ul id="list" class="list"></ul>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

@@ -142,3 +142,20 @@ button {
 .delete:hover { border-color: var(--danger); }
 
 .empty { color: var(--muted); text-align: center; padding: 1.5rem 0; }
+
+/* ---------- Monthly summary ---------- */
+.app > .card { margin-bottom: 1rem; }
+.summary-total { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.9rem; font-variant-numeric: tabular-nums; }
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+  font-size: 0.9rem;
+}
+
+.bar-row span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; }

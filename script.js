@@ -156,10 +156,82 @@ function renderChart() {
   }
 }
 
+// ---------- Monthly summary ----------
+function monthKey(t) {
+  // id = timestamp saat transaksi dibuat, jadi bulan diambil dari sini
+  const d = new Date(t.id);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function monthLabel(key) {
+  const [year, month] = key.split('-').map(Number);
+  return new Date(year, month - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+}
+
+function renderSummary() {
+  const select = $('month');
+  const summary = $('summary');
+  const previous = select.value;
+  const months = [...new Set(state.transactions.map(monthKey))].sort().reverse();
+
+  select.innerHTML = '';
+  summary.innerHTML = '';
+  select.hidden = months.length === 0;
+
+  if (months.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'muted';
+    empty.textContent = 'Add a transaction to see your monthly summary.';
+    summary.append(empty);
+    return;
+  }
+
+  months.forEach((key) => select.append(new Option(monthLabel(key), key)));
+  select.value = months.includes(previous) ? previous : months[0];
+
+  const items = state.transactions.filter((t) => monthKey(t) === select.value);
+  const total = items.reduce((sum, t) => sum + t.amount, 0);
+  const byCategory = {};
+  items.forEach((t) => {
+    byCategory[t.category] = (byCategory[t.category] || 0) + t.amount;
+  });
+
+  const head = document.createElement('p');
+  head.className = 'summary-total';
+  head.textContent = `${money.format(total)} across ${items.length} transaction${items.length === 1 ? '' : 's'}`;
+  summary.append(head);
+
+  Object.entries(byCategory)
+    .sort((a, b) => b[1] - a[1])
+    .forEach(([category, value]) => {
+      const row = document.createElement('div');
+      row.className = 'bar-row';
+
+      const label = document.createElement('span');
+      label.textContent = category;
+
+      const track = document.createElement('div');
+      track.className = 'bar-track';
+      const fill = document.createElement('div');
+      fill.className = 'bar-fill';
+      fill.style.width = `${(value / total) * 100}%`;
+      fill.style.background = colorFor(category);
+      track.append(fill);
+
+      const amount = document.createElement('span');
+      amount.className = 'amount';
+      amount.textContent = money.format(value);
+
+      row.append(label, track, amount);
+      summary.append(row);
+    });
+}
+
 function render() {
   renderTotal();
   renderList();
   renderChart();
+  renderSummary();
 }
 
 // ---------- Theme (dark / light) ----------
@@ -228,6 +300,7 @@ $('category-form').addEventListener('submit', (e) => {
 });
 
 $('sort').addEventListener('change', renderList);
+$('month').addEventListener('change', renderSummary);
 
 // ---------- Init ----------
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
